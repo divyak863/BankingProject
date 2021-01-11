@@ -6,6 +6,15 @@
     </Key>
     <Property Name="admin_id" Type="varchar" MaxLength="20" Nullable="false" />
     <Property Name="password" Type="varchar" MaxLength="15" Nullable="false" />
+    <Property Name="email_id" Type="varchar" MaxLength="40" />
+  </EntityType>
+  <EntityType Name="tblAdminOtp">
+    <Key>
+      <PropertyRef Name="opt" />
+    </Key>
+    <Property Name="admin_id" Type="varchar" MaxLength="20" />
+    <Property Name="opt" Type="int" Nullable="false" />
+    <Property Name="email_id" Type="varchar" MaxLength="40" />
   </EntityType>
   <EntityType Name="tblBalance">
     <Key>
@@ -23,8 +32,8 @@
     </Key>
     <Property Name="Reference_id" Type="int" />
     <Property Name="customer_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="account_number" Type="int" Nullable="false" />
     <Property Name="account_OpenDate" Type="date" />
+    <Property Name="account_number" Type="bigint" />
   </EntityType>
   <EntityType Name="tblBeneficiaries">
     <Key>
@@ -69,13 +78,9 @@
     <Property Name="user_id" Type="int" />
     <Property Name="account_number" Type="int" Nullable="false" />
   </EntityType>
-  <!--Errors Found During Generation:
-warning 6002: The table/view 'dbBank.dbo.tblNetBanking' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
   <EntityType Name="tblNetBanking">
     <Key>
       <PropertyRef Name="account_number" />
-      <PropertyRef Name="password" />
-      <PropertyRef Name="transaction_password" />
     </Key>
     <Property Name="user_id" Type="int" />
     <Property Name="account_number" Type="int" Nullable="false" />
@@ -86,7 +91,6 @@ warning 6002: The table/view 'dbBank.dbo.tblNetBanking' does not have a primary 
     <Key>
       <PropertyRef Name="transaction_id" />
     </Key>
-    <Property Name="transaction_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="customer_id" Type="int" />
     <Property Name="transaction_type" Type="varchar" MaxLength="10" />
     <Property Name="from_account" Type="int" />
@@ -96,7 +100,20 @@ warning 6002: The table/view 'dbBank.dbo.tblNetBanking' does not have a primary 
     <Property Name="amount" Type="float" />
     <Property Name="transaction_date" Type="date" />
     <Property Name="remarks" Type="text" />
+    <Property Name="transaction_id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
   </EntityType>
+  <Association Name="FK__tblAdminO__admin__1B9317B3">
+    <End Role="tbladmin" Type="Self.tbladmin" Multiplicity="0..1" />
+    <End Role="tblAdminOtp" Type="Self.tblAdminOtp" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbladmin">
+        <PropertyRef Name="admin_id" />
+      </Principal>
+      <Dependent Role="tblAdminOtp">
+        <PropertyRef Name="admin_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
   <Association Name="FK__tblBalanc__custo__36B12243">
     <End Role="tblBankingCustomers" Type="Self.tblBankingCustomers" Multiplicity="0..1" />
     <End Role="tblBalance" Type="Self.tblBalance" Multiplicity="*" />
@@ -181,22 +198,84 @@ warning 6002: The table/view 'dbBank.dbo.tblNetBanking' does not have a primary 
       </Dependent>
     </ReferentialConstraint>
   </Association>
+  <Function Name="proc_GetAlltheCustomersNames" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+  <Function Name="proc_GetApprovedCustomers" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+  <Function Name="proc_GetCustomersProfilesbyReferenceid" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="id" Type="int" Mode="In" />
+  </Function>
+  <Function Name="proc_GetCustomersProile" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="id" Type="int" Mode="In" />
+  </Function>
+  <Function Name="proc_GetPendingApplications" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+  <Function Name="proc_GettheCustomerApplications" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+  <Function Name="proc_GettheCustomerApplications1" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+  <Function Name="proc_GettheCustomersNames" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+  <Function Name="proc_GetUsername" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="email" Type="varchar" Mode="In" />
+  </Function>
+  <Function Name="proc_GetUsernameusingmail" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="email" Type="varchar" Mode="In" />
+  </Function>
+  <Function Name="proc_InsertApprovedCustomers" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="id" Type="int" Mode="In" />
+    <Parameter Name="acc_number" Type="int" Mode="In" />
+    <Parameter Name="acc_openDate" Type="varchar" Mode="In" />
+  </Function>
+  <Function Name="proc_InsertApprvCustomersinBankingTable" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="id" Type="int" Mode="In" />
+    <Parameter Name="acc_number" Type="int" Mode="In" />
+    <Parameter Name="acc_date" Type="date" Mode="In" />
+  </Function>
+  <Function Name="proc_InsertApprvCustomersinBankingTble" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="id" Type="int" Mode="In" />
+    <Parameter Name="acc_number" Type="bigint" Mode="In" />
+    <Parameter Name="acc_date" Type="date" Mode="In" />
+  </Function>
+  <Function Name="proc_InsertintotblwithEmail" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="email" Type="varchar" Mode="In" />
+    <Parameter Name="otp" Type="int" Mode="In" />
+  </Function>
+  <Function Name="proc_InsertOtps" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="id" Type="varchar" Mode="In" />
+    <Parameter Name="otp" Type="int" Mode="In" />
+  </Function>
+  <Function Name="proc_LoginCheck" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="un" Type="varchar" Mode="In" />
+    <Parameter Name="pass" Type="varchar" Mode="In" />
+  </Function>
+  <Function Name="proc_OtpCheck" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="mail" Type="varchar" Mode="In" />
+    <Parameter Name="otp" Type="int" Mode="In" />
+  </Function>
+  <Function Name="proc_OtpCheck1" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="mail" Type="varchar" Mode="In" />
+    <Parameter Name="otp" Type="int" Mode="In" />
+  </Function>
+  <Function Name="proc_OtpCheck2" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="mail" Type="varchar" Mode="In" />
+    <Parameter Name="otp" Type="int" Mode="In" />
+  </Function>
+  <Function Name="proc_RejectedApplications" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+  <Function Name="proc_UpdateApprovedstatus" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="id" Type="int" Mode="In" />
+  </Function>
+  <Function Name="proc_UpdateApprovedstatusCustomers" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="id" Type="int" Mode="In" />
+  </Function>
   <EntityContainer Name="dbBankModelStoreContainer">
     <EntitySet Name="tbladmin" EntityType="Self.tbladmin" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tblAdminOtp" EntityType="Self.tblAdminOtp" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="tblBalance" EntityType="Self.tblBalance" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="tblBankingCustomers" EntityType="Self.tblBankingCustomers" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="tblBeneficiaries" EntityType="Self.tblBeneficiaries" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="tblCustomers" EntityType="Self.tblCustomers" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="tblLocked" EntityType="Self.tblLocked" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tblNetBanking" EntityType="Self.tblNetBanking" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="tblTransactions" EntityType="Self.tblTransactions" Schema="dbo" store:Type="Tables" />
-    <EntitySet Name="tblNetBanking" EntityType="Self.tblNetBanking" store:Type="Tables" store:Schema="dbo">
-      <DefiningQuery>SELECT 
-    [tblNetBanking].[user_id] AS [user_id], 
-    [tblNetBanking].[account_number] AS [account_number], 
-    [tblNetBanking].[password] AS [password], 
-    [tblNetBanking].[transaction_password] AS [transaction_password]
-    FROM [dbo].[tblNetBanking] AS [tblNetBanking]</DefiningQuery>
-    </EntitySet>
+    <AssociationSet Name="FK__tblAdminO__admin__1B9317B3" Association="Self.FK__tblAdminO__admin__1B9317B3">
+      <End Role="tbladmin" EntitySet="tbladmin" />
+      <End Role="tblAdminOtp" EntitySet="tblAdminOtp" />
+    </AssociationSet>
     <AssociationSet Name="FK__tblBalanc__custo__36B12243" Association="Self.FK__tblBalanc__custo__36B12243">
       <End Role="tblBankingCustomers" EntitySet="tblBankingCustomers" />
       <End Role="tblBalance" EntitySet="tblBalance" />

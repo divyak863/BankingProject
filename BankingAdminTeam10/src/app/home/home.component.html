@@ -24,7 +24,7 @@
                      and multi channel <br>
                      banking experience</h6>
                   <br>
-                  <a mdbBtn color="white" outline="true" class="wow fadeInLeft waves-light" data-wow-delay="0.3s"
+                  <a mdbBtn color="white"  class="wow fadeInLeft waves-light" data-wow-delay="0.3s"
                     mdbWavesEffect>Learn more</a>
                 </div>
               </div>
@@ -42,16 +42,16 @@
                     </div>
                     <!--Body-->
                    
-                    <form [formGroup]="myForm" (ngSubmit)="loginCheck()">
-                      <label class="form-control" color="black"><strong>Username</strong></label>
-                      <input type="=text" class="form-control" formControlName="username">
+                    <form [formGroup]="myForm" (ngSubmit)="onLogin()">
+                      <label class="form-control"  color="black"><strong>Username</strong></label>
+                      <input type="=text" class="form-control" placeholder="please enter username" name="username" id="username" formControlName="username" >
                       <span *ngIf="username.touched && !username.valid">
                           <span *ngIf="username.errors && username.errors.required">
                             <span id="msg"><strong>Username cannot be empty</strong> </span>
                             </span>
                       </span>
                       <label class="form-control"><strong>Password</strong></label>
-                      <input type="password" class="form-control" formControlName="password">
+                      <input type="password" class="form-control" placeholder="please enter password" name="password" id="password" formControlName="password">
                       <span *ngIf="password.touched && !password.valid">  
                          <span *ngIf="password.errors && password.errors.required" >
                              <span id="msg"><strong>Password cannot be empty</strong> </span>
@@ -61,19 +61,44 @@
                          </span>
                      </span>
                      <div class="text-center mt-4">
-                      <button mdbBtn color="indigo" mdbWavesEffect>Login</button>
+                      <button mdbBtn color="indigo" mdbWavesEffect>Login</button><br>
+                      <a routerLink="/forgotpassword">forgot password?</a><br>
+                      <a routerLink="/forgotusername">forgot username?</a>
                      </div>
-                  </form>
-                  <div [hidden]="resmessage==''">
-                      {{resmessage}}
+                    </form>
+                  <div *ngIf="msg">
+                      {{msg}}
                   </div>
                   </mdb-card-body>
-                </mdb-card>
-             
+                </mdb-card>               
               </div>
             </div>
+          
           </div>
+          <footer>
+            <div class="row" style="text-align: center;">
+              <div class="column">
+                <i class='far fa-map' style='font-size:36px'></i>
+                <h2>Locate Us</h2>
+                Larsen and Toubro Infotech Campus<br>
+                Block-II, Mahape
+              </div>
+              <div class="column">
+                <i class='fas fa-phone' style='font-size:36px'></i>
+                <h2>Contact Us</h2>
+                <p>+91 9876543210 <br>24 Hour Hotline: 1800 000 0000</p>
+              </div>
+              <div class="column">
+                <i class="fas fa-envelope" style='font-size:36px'></i>
+                <h2>Email Us</h2>
+                <p>helpline@rdns.in</p>
+              </div>
+            </div>
+          </footer>
         </div>
+     
       </div>
+      
     </section>
+   
 </header>

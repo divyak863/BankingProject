@@ -7,6 +7,8 @@
     <Property Name="admin_id" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
     <Property Name="password" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
     <NavigationProperty Name="tblCustomers" Relationship="Self.FK__tblCustom__appro__145C0A3F" FromRole="tbladmin" ToRole="tblCustomers" />
+    <NavigationProperty Name="tblAdminOtps" Relationship="dbBankModel.FK__tblAdminO__admin__1B9317B3" FromRole="tbladmin" ToRole="tblAdminOtp" />
+    <Property Name="email_id" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
   </EntityType>
   <EntityType Name="tblBalance">
     <Key>
@@ -25,14 +27,14 @@
     </Key>
     <Property Name="Reference_id" Type="Int32" />
     <Property Name="customer_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="account_number" Type="Int32" Nullable="false" />
+    <Property Name="account_number" Type="Int32" />
     <Property Name="account_OpenDate" Type="DateTime" Precision="0" />
     <NavigationProperty Name="tblBalances" Relationship="Self.FK__tblBalanc__custo__36B12243" FromRole="tblBankingCustomers" ToRole="tblBalance" />
     <NavigationProperty Name="tblCustomer" Relationship="Self.FK__tblBankin__Refer__182C9B23" FromRole="tblBankingCustomers" ToRole="tblCustomers" />
     <NavigationProperty Name="tblBeneficiaries" Relationship="Self.FK__tblBenefi__custo__267ABA7A" FromRole="tblBankingCustomers" ToRole="tblBeneficiaries" />
     <NavigationProperty Name="tblLockeds" Relationship="Self.FK__tblLocked__user___3A81B327" FromRole="tblBankingCustomers" ToRole="tblLocked" />
-    <NavigationProperty Name="tblNetBankings" Relationship="Self.FK__tblNetBan__user___1CF15040" FromRole="tblBankingCustomers" ToRole="tblNetBanking" />
     <NavigationProperty Name="tblTransactions" Relationship="Self.FK__tblTransa__custo__1FCDBCEB" FromRole="tblBankingCustomers" ToRole="tblTransactions" />
+    <NavigationProperty Name="tblNetBankings" Relationship="dbBankModel.FK__tblNetBan__user___1CF15040" FromRole="tblBankingCustomer" ToRole="tblNetBanking" />
   </EntityType>
   <EntityType Name="tblBeneficiary">
     <Key>
@@ -97,18 +99,6 @@
     <Property Name="remarks" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
     <NavigationProperty Name="tblBankingCustomer" Relationship="Self.FK__tblTransa__custo__1FCDBCEB" FromRole="tblTransactions" ToRole="tblBankingCustomers" />
   </EntityType>
-  <EntityType Name="tblNetBanking">
-    <Key>
-      <PropertyRef Name="account_number" />
-      <PropertyRef Name="password" />
-      <PropertyRef Name="transaction_password" />
-    </Key>
-    <Property Name="user_id" Type="Int32" />
-    <Property Name="account_number" Type="Int32" Nullable="false" />
-    <Property Name="password" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
-    <Property Name="transaction_password" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
-    <NavigationProperty Name="tblBankingCustomer" Relationship="Self.FK__tblNetBan__user___1CF15040" FromRole="tblNetBanking" ToRole="tblBankingCustomers" />
-  </EntityType>
   <Association Name="FK__tblCustom__appro__145C0A3F">
     <End Role="tbladmin" Type="Self.tbladmin" Multiplicity="0..1" />
     <End Role="tblCustomers" Type="Self.tblCustomer" Multiplicity="*" />
@@ -169,18 +159,6 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
-  <Association Name="FK__tblNetBan__user___1CF15040">
-    <End Role="tblBankingCustomers" Type="Self.tblBankingCustomer" Multiplicity="0..1" />
-    <End Role="tblNetBanking" Type="Self.tblNetBanking" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="tblBankingCustomers">
-        <PropertyRef Name="customer_id" />
-      </Principal>
-      <Dependent Role="tblNetBanking">
-        <PropertyRef Name="user_id" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
   <Association Name="FK__tblTransa__custo__1FCDBCEB">
     <End Role="tblBankingCustomers" Type="Self.tblBankingCustomer" Multiplicity="0..1" />
     <End Role="tblTransactions" Type="Self.tblTransaction" Multiplicity="*" />
@@ -201,7 +179,6 @@
     <EntitySet Name="tblCustomers" EntityType="Self.tblCustomer" />
     <EntitySet Name="tblLockeds" EntityType="Self.tblLocked" />
     <EntitySet Name="tblTransactions" EntityType="Self.tblTransaction" />
-    <EntitySet Name="tblNetBankings" EntityType="Self.tblNetBanking" />
     <AssociationSet Name="FK__tblCustom__appro__145C0A3F" Association="Self.FK__tblCustom__appro__145C0A3F">
       <End Role="tbladmin" EntitySet="tbladmins" />
       <End Role="tblCustomers" EntitySet="tblCustomers" />
@@ -222,13 +199,225 @@
       <End Role="tblBankingCustomers" EntitySet="tblBankingCustomers" />
       <End Role="tblLocked" EntitySet="tblLockeds" />
     </AssociationSet>
-    <AssociationSet Name="FK__tblNetBan__user___1CF15040" Association="Self.FK__tblNetBan__user___1CF15040">
-      <End Role="tblBankingCustomers" EntitySet="tblBankingCustomers" />
-      <End Role="tblNetBanking" EntitySet="tblNetBankings" />
-    </AssociationSet>
     <AssociationSet Name="FK__tblTransa__custo__1FCDBCEB" Association="Self.FK__tblTransa__custo__1FCDBCEB">
       <End Role="tblBankingCustomers" EntitySet="tblBankingCustomers" />
       <End Role="tblTransactions" EntitySet="tblTransactions" />
     </AssociationSet>
+    <EntitySet Name="tblNetBankings" EntityType="dbBankModel.tblNetBanking" />
+    <AssociationSet Name="FK__tblNetBan__user___1CF15040" Association="dbBankModel.FK__tblNetBan__user___1CF15040">
+      <End Role="tblBankingCustomer" EntitySet="tblBankingCustomers" />
+      <End Role="tblNetBanking" EntitySet="tblNetBankings" />
+    </AssociationSet>
+    <FunctionImport Name="proc_LoginCheck" ReturnType="Collection(dbBankModel.proc_LoginCheck_Result)">
+      <Parameter Name="un" Mode="In" Type="String" />
+      <Parameter Name="pass" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="proc_GettheCustomersNames" ReturnType="Collection(String)" />
+    <FunctionImport Name="proc_GetAlltheCustomersNames" ReturnType="Collection(dbBankModel.proc_GetAlltheCustomersNames_Result)" />
+    <FunctionImport Name="proc_GettheCustomerApplications" ReturnType="Collection(dbBankModel.proc_GettheCustomerApplications_Result)" />
+    <FunctionImport Name="proc_GettheCustomerApplications1" ReturnType="Collection(dbBankModel.proc_GettheCustomerApplications1_Result)" />
+    <FunctionImport Name="proc_GetCustomersProile" ReturnType="Collection(dbBankModel.proc_GetCustomersProile_Result)">
+      <Parameter Name="id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="proc_UpdateApprovedstatus">
+      <Parameter Name="id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="proc_UpdateApprovedstatusCustomers">
+      <Parameter Name="id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="proc_GetApprovedCustomers" ReturnType="Collection(dbBankModel.proc_GetApprovedCustomers_Result)" />
+    <FunctionImport Name="proc_GetPendingApplications" ReturnType="Collection(dbBankModel.proc_GetPendingApplications_Result)" />
+    <FunctionImport Name="proc_GetCustomersProfilesbyReferenceid" ReturnType="Collection(dbBankModel.proc_GetCustomersProfilesbyReferenceid_Result)">
+      <Parameter Name="id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="proc_RejectedApplications" ReturnType="Collection(dbBankModel.proc_RejectedApplications_Result)" />
+    <FunctionImport Name="proc_InsertApprovedCustomers">
+      <Parameter Name="id" Mode="In" Type="Int32" />
+      <Parameter Name="acc_number" Mode="In" Type="Int32" />
+      <Parameter Name="acc_openDate" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="proc_InsertApprvCustomersinBankingTable">
+      <Parameter Name="id" Mode="In" Type="Int32" />
+      <Parameter Name="acc_number" Mode="In" Type="Int32" />
+      <Parameter Name="acc_date" Mode="In" Type="DateTime" />
+    </FunctionImport>
+    <FunctionImport Name="proc_InsertApprvCustomersinBankingTble">
+      <Parameter Name="id" Mode="In" Type="Int32" />
+      <Parameter Name="acc_number" Mode="In" Type="Int64" />
+      <Parameter Name="acc_date" Mode="In" Type="DateTime" />
+    </FunctionImport>
+    <EntitySet Name="tblAdminOtps" EntityType="dbBankModel.tblAdminOtp" />
+    <AssociationSet Name="FK__tblAdminO__admin__1B9317B3" Association="dbBankModel.FK__tblAdminO__admin__1B9317B3">
+      <End Role="tbladmin" EntitySet="tbladmins" />
+      <End Role="tblAdminOtp" EntitySet="tblAdminOtps" />
+    </AssociationSet>
+    <FunctionImport Name="proc_InsertOtps">
+      <Parameter Name="id" Mode="In" Type="String" />
+      <Parameter Name="otp" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="proc_InsertintotblwithEmail">
+      <Parameter Name="email" Mode="In" Type="String" />
+      <Parameter Name="otp" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="proc_OtpCheck" ReturnType="Collection(String)">
+      <Parameter Name="mail" Mode="In" Type="String" />
+      <Parameter Name="otp" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="proc_OtpCheck1" ReturnType="Collection(String)">
+      <Parameter Name="mail" Mode="In" Type="String" />
+      <Parameter Name="otp" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="proc_OtpCheck2" ReturnType="Collection(dbBankModel.proc_OtpCheck2_Result)">
+      <Parameter Name="mail" Mode="In" Type="String" />
+      <Parameter Name="otp" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="proc_GetUsername" ReturnType="Collection(String)">
+      <Parameter Name="email" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="proc_GetUsername1" ReturnType="Collection(dbBankModel.proc_GetUsername1_Result)">
+      <Parameter Name="email" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="proc_GetUsernameusingmail" ReturnType="Collection(dbBankModel.proc_GetUsernameusingmail_Result)">
+      <Parameter Name="email" Mode="In" Type="String" />
+    </FunctionImport>
   </EntityContainer>
+  <EntityType Name="tblNetBanking">
+    <Key>
+      <PropertyRef Name="account_number" />
+    </Key>
+    <Property Name="user_id" Type="Int32" />
+    <Property Name="account_number" Type="Int32" Nullable="false" />
+    <Property Name="password" Type="String" Nullable="false" MaxLength="15" FixedLength="false" Unicode="false" />
+    <Property Name="transaction_password" Type="String" Nullable="false" MaxLength="15" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="tblBankingCustomer" Relationship="dbBankModel.FK__tblNetBan__user___1CF15040" FromRole="tblNetBanking" ToRole="tblBankingCustomer" />
+  </EntityType>
+  <Association Name="FK__tblNetBan__user___1CF15040">
+    <End Type="dbBankModel.tblBankingCustomer" Role="tblBankingCustomer" Multiplicity="0..1" />
+    <End Type="dbBankModel.tblNetBanking" Role="tblNetBanking" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tblBankingCustomer">
+        <PropertyRef Name="customer_id" />
+      </Principal>
+      <Dependent Role="tblNetBanking">
+        <PropertyRef Name="user_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <ComplexType Name="proc_LoginCheck_Result">
+    <Property Type="String" Name="admin_id" Nullable="false" MaxLength="20" />
+    <Property Type="String" Name="password" Nullable="false" MaxLength="15" />
+  </ComplexType>
+  <ComplexType Name="proc_GetAlltheCustomersNames_Result">
+    <Property Type="String" Name="First_name" Nullable="false" MaxLength="30" />
+    <Property Type="String" Name="middle_name" Nullable="true" MaxLength="30" />
+    <Property Type="String" Name="Last_name" Nullable="false" MaxLength="30" />
+  </ComplexType>
+  <ComplexType Name="proc_GettheCustomerApplications_Result">
+    <Property Type="String" Name="First_name" Nullable="false" MaxLength="30" />
+    <Property Type="String" Name="middle_name" Nullable="true" MaxLength="30" />
+    <Property Type="String" Name="Last_name" Nullable="false" MaxLength="30" />
+  </ComplexType>
+  <ComplexType Name="proc_GettheCustomerApplications1_Result">
+    <Property Type="Int32" Name="Reference_id" Nullable="false" />
+    <Property Type="String" Name="First_name" Nullable="false" MaxLength="30" />
+    <Property Type="String" Name="middle_name" Nullable="true" MaxLength="30" />
+    <Property Type="String" Name="Last_name" Nullable="false" MaxLength="30" />
+  </ComplexType>
+  <ComplexType Name="proc_GetCustomersProile_Result">
+    <Property Type="String" Name="First_name" Nullable="false" MaxLength="30" />
+    <Property Type="String" Name="Last_name" Nullable="false" MaxLength="30" />
+    <Property Type="String" Name="Father_name" Nullable="false" MaxLength="30" />
+    <Property Type="String" Name="mobile_number" Nullable="false" MaxLength="15" />
+    <Property Type="String" Name="email_id" Nullable="false" MaxLength="40" />
+    <Property Type="String" Name="account_type" Nullable="false" MaxLength="20" />
+    <Property Type="String" Name="aadhar_number" Nullable="false" MaxLength="16" />
+    <Property Type="DateTime" Name="date_of_birth" Nullable="false" />
+    <Property Type="Int32" Name="age" Nullable="false" />
+    <Property Type="String" Name="gender" Nullable="true" MaxLength="10" />
+    <Property Type="String" Name="Residential_address" Nullable="false" MaxLength="100" />
+    <Property Type="String" Name="permanent_address" Nullable="false" MaxLength="100" />
+    <Property Type="String" Name="occupation_Type" Nullable="false" MaxLength="30" />
+    <Property Type="String" Name="source_of_income" Nullable="false" MaxLength="30" />
+    <Property Type="Double" Name="gross_income" Nullable="false" />
+    <Property Type="DateTime" Name="account_OpenDate" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="proc_GetApprovedCustomers_Result">
+    <Property Type="Int32" Name="Reference_id" Nullable="false" />
+    <Property Type="String" Name="First_name" Nullable="false" MaxLength="30" />
+    <Property Type="String" Name="middle_name" Nullable="true" MaxLength="30" />
+    <Property Type="String" Name="Last_name" Nullable="false" MaxLength="30" />
+    <Property Type="String" Name="mobile_number" Nullable="false" MaxLength="15" />
+    <Property Type="String" Name="email_id" Nullable="false" MaxLength="40" />
+    <Property Type="String" Name="aadhar_number" Nullable="false" MaxLength="16" />
+  </ComplexType>
+  <ComplexType Name="proc_GetPendingApplications_Result">
+    <Property Type="Int32" Name="Reference_id" Nullable="false" />
+    <Property Type="String" Name="First_name" Nullable="false" MaxLength="30" />
+    <Property Type="String" Name="middle_name" Nullable="true" MaxLength="30" />
+    <Property Type="String" Name="Last_name" Nullable="false" MaxLength="30" />
+    <Property Type="String" Name="mobile_number" Nullable="false" MaxLength="15" />
+    <Property Type="String" Name="email_id" Nullable="false" MaxLength="40" />
+    <Property Type="String" Name="aadhar_number" Nullable="false" MaxLength="16" />
+  </ComplexType>
+  <ComplexType Name="proc_GetCustomersProfilesbyReferenceid_Result">
+    <Property Type="Int32" Name="Reference_id" Nullable="false" />
+    <Property Type="String" Name="First_name" Nullable="false" MaxLength="30" />
+    <Property Type="String" Name="middle_name" Nullable="true" MaxLength="30" />
+    <Property Type="String" Name="Last_name" Nullable="false" MaxLength="30" />
+    <Property Type="String" Name="Father_name" Nullable="false" MaxLength="30" />
+    <Property Type="String" Name="mobile_number" Nullable="false" MaxLength="15" />
+    <Property Type="String" Name="email_id" Nullable="false" MaxLength="40" />
+    <Property Type="String" Name="account_type" Nullable="false" MaxLength="20" />
+    <Property Type="String" Name="aadhar_number" Nullable="false" MaxLength="16" />
+    <Property Type="DateTime" Name="date_of_birth" Nullable="false" />
+    <Property Type="Int32" Name="age" Nullable="false" />
+    <Property Type="String" Name="gender" Nullable="true" MaxLength="10" />
+    <Property Type="String" Name="Residential_address" Nullable="false" MaxLength="100" />
+    <Property Type="String" Name="permanent_address" Nullable="false" MaxLength="100" />
+    <Property Type="String" Name="occupation_Type" Nullable="false" MaxLength="30" />
+    <Property Type="String" Name="source_of_income" Nullable="false" MaxLength="30" />
+    <Property Type="Double" Name="gross_income" Nullable="false" />
+    <Property Type="DateTime" Name="account_OpenDate" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="proc_RejectedApplications_Result">
+    <Property Type="Int32" Name="Reference_id" Nullable="false" />
+    <Property Type="String" Name="First_name" Nullable="false" MaxLength="30" />
+    <Property Type="String" Name="middle_name" Nullable="true" MaxLength="30" />
+    <Property Type="String" Name="Last_name" Nullable="false" MaxLength="30" />
+    <Property Type="String" Name="mobile_number" Nullable="false" MaxLength="15" />
+    <Property Type="String" Name="email_id" Nullable="false" MaxLength="40" />
+    <Property Type="String" Name="aadhar_number" Nullable="false" MaxLength="16" />
+  </ComplexType>
+  <EntityType Name="tblAdminOtp">
+    <Key>
+      <PropertyRef Name="opt" />
+    </Key>
+    <Property Name="admin_id" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="opt" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="tbladmin" Relationship="dbBankModel.FK__tblAdminO__admin__1B9317B3" FromRole="tblAdminOtp" ToRole="tbladmin" />
+    <Property Name="email_id" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <Association Name="FK__tblAdminO__admin__1B9317B3">
+    <End Type="dbBankModel.tbladmin" Role="tbladmin" Multiplicity="0..1" />
+    <End Type="dbBankModel.tblAdminOtp" Role="tblAdminOtp" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbladmin">
+        <PropertyRef Name="admin_id" />
+      </Principal>
+      <Dependent Role="tblAdminOtp">
+        <PropertyRef Name="admin_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <ComplexType Name="proc_OtpCheck2_Result">
+    <Property Type="String" Name="email_id" Nullable="true" MaxLength="40" />
+    <Property Type="Int32" Name="opt" Nullable="false" />
+  </ComplexType>
+  <ComplexType Name="proc_GetUsername1_Result">
+    <Property Type="String" Name="admin_id" Nullable="false" MaxLength="20" />
+  </ComplexType>
+  <ComplexType Name="proc_GetUsernameusingmail_Result">
+    <Property Type="String" Name="admin_id" Nullable="false" MaxLength="20" />
+    <Property Type="String" Name="email_id" Nullable="true" MaxLength="40" />
+  </ComplexType>
 </Schema>

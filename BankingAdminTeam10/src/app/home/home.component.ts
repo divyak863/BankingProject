@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../auth.service';
 import { Admin } from '../models/admin.model';
+import { AdminService } from '../services/admin.service';
 
 @Component({
   selector: 'app-home',
@@ -9,15 +12,16 @@ import { Admin } from '../models/admin.model';
 })
 export class HomeComponent implements OnInit {
   admin:Admin;
+  resultadmin:any;
+  msg:any;
   myForm:FormGroup;
-  resmessage:string="";
-  constructor() { 
+  constructor(private adminservice:AdminService,private route:Router,private authService:AuthService) { 
     this.admin=new Admin();
     this.myForm=new FormGroup({
       username:new FormControl(null,[Validators.required]),
-      password:new FormControl(null,[Validators.required,Validators.pattern("[A-Z][a-z][a-z][a-z]")])
+      password:new FormControl(null,[Validators.required])
     });
-    this.resmessage="";
+  
   }
   public get username():any{
     return this.myForm.get("username");
@@ -25,12 +29,20 @@ export class HomeComponent implements OnInit {
   public get password():any{
    return this.myForm.get("password");
  }
- loginCheck(){
+ onLogin(){
   if(this.myForm.valid)
   {
-    var admin:Admin=new Admin();
-     admin.admin_id=this.username.value;
-     admin.password=this.password.value;
+    var user:Admin=new Admin();
+     localStorage.setItem("admin",this.myForm.value["username"]);
+     console.log(this.myForm.value["username"]);
+     user.admin_id=this.username.value;
+     user.password=this.password.value;
+     this.adminservice.LoginCheckUsingApi(user).subscribe(data=>{this.resultadmin=data;if(this.resultadmin!=null)
+      {
+        this.authService.login(this.myForm.value);
+        this.route.navigate(["adminhome"]);
+      }else{this.msg="Invalid Admin";}
+      },error=>this.msg=error.error.Message);
   }
 }
  
